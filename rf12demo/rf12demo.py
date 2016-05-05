@@ -161,7 +161,7 @@ class Rf12Demo(Serial):
         self.set_config('%dq' % quiet)
         assert self.quiet==bool(quiet)
 
-    def set_format(self, format):
+    def set_format(self, format):  # @ReservedAssignment
         self.set_config('%dx' % format)
         assert self.format==format
 
@@ -187,9 +187,11 @@ class Rf12Demo(Serial):
     def log_received_information(self, timeout=0, log_package_function=None):
         """
         Log incomming information from jeelink. Currently only received
-        packages are supported.
+        packages are supported. Return all data that came from parsing
+        received information.
         """
         timer = time.time()+timeout
+        all_data = []
         while(time.time()<timer):
             line = self.readline()  # blocking read with self.timout
             if not line:
@@ -202,6 +204,8 @@ class Rf12Demo(Serial):
                     log_package_function(self, data)
                 else:
                     self.log_package(data)
+                all_data.append(data)
+        return all_data
 
     def log_package(self, data):
         # default package logging
